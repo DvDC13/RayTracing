@@ -70,12 +70,6 @@ public:
         double m_z;
 };
 
-inline std::ostream& operator<<(std::ostream& stream, const Vector3& vector)
-{
-    stream << "(" << vector.getX() << ", " << vector.getY() << ", " << vector.getZ() << ")";
-    return stream;
-}
-
 inline Vector3 operator+(const Vector3& left, const Vector3& right)
 {
     return Vector3(left.getX() + right.getX(), left.getY() + right.getY(), left.getZ() + right.getZ());

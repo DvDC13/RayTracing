@@ -2,6 +2,9 @@
 #include "Image.h"
 #include "TextureMaterial.h"
 
+#include <chrono>
+#include <iostream>
+
 Color3 ray_cast(const Ray& r, const Scene& world, int limit)
 {
     if (limit <= 0) return Color3(0, 0, 0);
@@ -79,8 +82,16 @@ Pixel processImageColor(Color3& pixel_color, int samples_per_pixel)
     return pixel;
 }
 
-int main()
+int main(int argc, char** argv)
 {
+    auto start = std::chrono::high_resolution_clock::now();
+
+    if (argc != 2)
+    {
+        std::cerr << "Usage: " << argv[0] << " <output file.ppm>" << std::endl;
+        return EXIT_FAILURE;
+    }
+
     std::vector<std::shared_ptr<Object>> objects;
     std::vector<std::shared_ptr<Light>> lights;
     Scene world(objects, lights);
@@ -128,7 +139,11 @@ int main()
     objects.clear();
     lights.clear();
 
-    image.toPPM();
+    image.toPPM(argv[1]);
+
+    auto end = std::chrono::high_resolution_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::seconds>(end - start);
+    std::cout << "Time taken by function: " << duration.count() << " seconds" << std::endl;
 
     return EXIT_SUCCESS;
 }

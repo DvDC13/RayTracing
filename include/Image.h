@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <vector>
+#include <fstream>
 
 class Pixel
 {
@@ -30,18 +31,26 @@ public:
         pixels[y * width + x] = pixel;
     }
 
-    void toPPM() const
+    void toPPM(const std::string& path) const
     {
-        std::cout << "P3" << std::endl;
-        std::cout << width << " " << height << std::endl;
-        std::cout << "255" << std::endl;
+        std::ofstream file;
+        file.open(path);
+        if (!file.is_open())
+        {
+            std::cerr << "Error: Could not open file " << path << std::endl;
+            exit(EXIT_FAILURE);
+        }
+
+        file << "P3" << std::endl;
+        file << width << " " << height << std::endl;
+        file << "255" << std::endl;
 
         for (int y = height - 1; y >= 0; y--)
         {
             for (int x = 0; x < width; x++)
             {
                 Pixel pixel = getPixel(x, y);
-                std::cout << pixel.r << " " << pixel.g << " " << pixel.b << std::endl;
+                file << pixel.r << " " << pixel.g << " " << pixel.b << std::endl;
             }
         }
     }
