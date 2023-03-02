@@ -99,29 +99,25 @@ int main(int argc, char** argv)
     Scene world(objects, lights);
 
     auto material_ground = std::make_shared<UniformTexture>(Color3(0.8, 0.8, 0.0), 0.5f, 0.5f);
-    //auto material_center = std::make_shared<UniformTexture>(Color3(1.0, 0.2, 0.5), 0.5f, 0.5f);
-    //auto material_left = std::make_shared<MetalTexture>(Color3(0.8, 0.8, 0.8), 1.0);
-    //auto material_right = std::make_shared<MirrorTexture>(Color3(1.0, 0.8, 0.8));
+    auto material_left = std::make_shared<MetalTexture>(Color3(1.0, 0.8, 0.8), 1.0);
+    auto material_right = std::make_shared<MirrorTexture>(Color3(1.0, 0.0, 0.0));
 
-    //world.addObject(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100, material_ground));
-    //world.addObject(std::make_shared<Sphere>(Point3(0, 0, -1), 0.5, material_center));
-    //world.addObject(std::make_shared<Sphere>(Point3(-1, 0, -1), 0.5, material_left));
-    //world.addObject(std::make_shared<Sphere>(Point3(1, 0, -1), 0.5, material_right));
-
-    /*std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+    std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
     mesh->addCube();
     world.addObject(mesh);
 
     std::shared_ptr<Mesh> mesh2 = std::make_shared<Mesh>();
     mesh2->addCube();
     mesh2->translate(Point3(0, 0, 2));
-    world.addObject(mesh2);*/
+    world.addObject(mesh2);
 
-    Blob blob(2, 1, Point3(0, 0, 0), 1.1);
-    Mesh mesh = blob.marchCubes();
-    std::cout << "Mesh size: " << mesh.getMesh().size() << std::endl;
+    world.addObject(std::make_shared<Sphere>(Point3(-1, 0, 0), 0.7, material_right));
+    world.addObject(std::make_shared<Sphere>(Point3(1, 0, 0), 0.7, material_left));
+    world.addObject(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100, material_ground));
 
-    world.addObject(std::make_shared<Mesh>(mesh));
+    //Blob blob(2, 1, Point3(0, 0, 0), 1.1);
+    //Mesh mesh = blob.marchCubes();
+    //std::cout << "Mesh size: " << mesh.getMesh().size() << std::endl;
 
     world.addLight(std::make_shared<DirectionalLight>(Point3(1, 4, 10), Color3(1, 1, 1), 1.0f));
 

@@ -8,7 +8,7 @@ class Camera
 public:
     Camera()
     {
-        m_lookFrom = Point3(-3, 2, 1);
+        m_lookFrom = Point3(-2, 1, 1);
         m_lookAt = Point3(0, 0, 0);
         m_up = Vector3(0, 1, 0);
         m_fov = 90.0f;

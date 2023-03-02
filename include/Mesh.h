@@ -25,7 +25,7 @@ public:
 
     void addCube()
     {
-        auto material_ground = std::make_shared<UniformTexture>(Color3(0.8, 0.8, 0.0), 0.5f, 0.5f);
+        auto material_ground = std::make_shared<MirrorTexture>(Color3(0.0, 0.0, 0.8));
 
         Triangle tri1South = Triangle(
             Point3(0.0, 0.0, 0.0),
