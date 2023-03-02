@@ -53,6 +53,8 @@ public:
                 file << pixel.r << " " << pixel.g << " " << pixel.b << std::endl;
             }
         }
+
+        file.close();
     }
 
 private:

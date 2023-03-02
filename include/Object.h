@@ -139,6 +139,14 @@ public:
         return outward_normal;
     }
 
+    inline Point3 getP0() const { return m_p0; }
+    inline Point3 getP1() const { return m_p1; }
+    inline Point3 getP2() const { return m_p2; }
+
+    inline void setP0(Point3 p0) { m_p0 = p0; }
+    inline void setP1(Point3 p1) { m_p1 = p1; }
+    inline void setP2(Point3 p2) { m_p2 = p2; }
+
 private:
     Point3 m_p0;
     Point3 m_p1;
