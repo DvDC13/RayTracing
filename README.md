@@ -1,6 +1,6 @@
 # Simple RayTracer in C++
 
-This is a simple RayTracer program implemented in C++. It uses the basic principles of RayTracing to create a simple image with spheres, triangles and  lighting, and shadows.
+This is a simple RayTracer program implemented in C++. It uses the basic principles of RayTracing to create a simple image with spheres, triangles, lighting, and shadows.
 
 # Usage
 
