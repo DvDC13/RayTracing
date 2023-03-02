@@ -12,7 +12,7 @@ public:
     Scene(const std::vector<std::shared_ptr<Object>>& objects, const std::vector<std::shared_ptr<Light>>& lights)
         : m_objects(objects), m_lights(lights)
     {
-        m_camera = Camera();
+        m_camera = Camera(Point3(-2, 2, 1), Point3(0, 0, -1), Vector3(0, 1, 0), 90, 16.0 / 9.0);
     }
 
     void addObject(const std::shared_ptr<Object>& object) { m_objects.emplace_back(object); }

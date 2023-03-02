@@ -102,14 +102,14 @@ int main(int argc, char** argv)
     auto material_left = std::make_shared<MetalTexture>(Color3(1.0, 0.8, 0.8), 1.0);
     auto material_right = std::make_shared<MirrorTexture>(Color3(1.0, 0.0, 0.0));
 
-    std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
+    /*std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
     mesh->addCube();
     world.addObject(mesh);
 
     std::shared_ptr<Mesh> mesh2 = std::make_shared<Mesh>();
     mesh2->addCube();
     mesh2->translate(Point3(0, 0, 2));
-    world.addObject(mesh2);
+    world.addObject(mesh2);*/
 
     world.addObject(std::make_shared<Sphere>(Point3(-1, 0, 0), 0.7, material_right));
     world.addObject(std::make_shared<Sphere>(Point3(1, 0, 0), 0.7, material_left));
