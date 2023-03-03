@@ -10,7 +10,7 @@ public:
 
     void addTriangle(Triangle triangle)
     {
-        m_mesh.push_back(triangle);
+        m_mesh.emplace_back(triangle);
     }
 
     void translate(Vector3 v)

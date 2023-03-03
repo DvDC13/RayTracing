@@ -99,25 +99,35 @@ int main(int argc, char** argv)
     Scene world(objects, lights);
 
     auto material_ground = std::make_shared<UniformTexture>(Color3(0.8, 0.8, 0.0), 0.5f, 0.5f);
-    auto material_left = std::make_shared<MetalTexture>(Color3(1.0, 0.8, 0.8), 1.0);
-    auto material_right = std::make_shared<MirrorTexture>(Color3(1.0, 0.0, 0.0));
+    auto material_blue = std::make_shared<UniformTexture>(Color3(0.2, 0.4, 0.9), 0.5f, 0.5f);
+    //auto material_left = std::make_shared<MetalTexture>(Color3(1.0, 0.8, 0.8), 1.0);
+    //auto material_right = std::make_shared<MirrorTexture>(Color3(1.0, 0.0, 0.0));
 
-    /*std::shared_ptr<Mesh> mesh = std::make_shared<Mesh>();
-    mesh->addCube();
-    world.addObject(mesh);
+    int m_e = 4;
+    int m_d = 1;
 
-    std::shared_ptr<Mesh> mesh2 = std::make_shared<Mesh>();
-    mesh2->addCube();
-    mesh2->translate(Point3(0, 0, 2));
-    world.addObject(mesh2);*/
+    std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(Point3(0, 0, 0), 0.10, material_blue);
+    std::shared_ptr<Sphere> sphere2 = std::make_shared<Sphere>(Point3(m_e, 0, 0), 0.10, material_blue);
+    std::shared_ptr<Sphere> sphere3 = std::make_shared<Sphere>(Point3(0, m_e, 0), 0.10, material_blue);
+    std::shared_ptr<Sphere> sphere4 = std::make_shared<Sphere>(Point3(0, 0, m_e), 0.10, material_blue);
+    std::shared_ptr<Sphere> sphere5 = std::make_shared<Sphere>(Point3(m_e, m_e, 0), 0.10, material_blue);
+    std::shared_ptr<Sphere> sphere6 = std::make_shared<Sphere>(Point3(m_e, 0, m_e), 0.10, material_blue);
+    std::shared_ptr<Sphere> sphere7 = std::make_shared<Sphere>(Point3(0, m_e, m_e), 0.10, material_blue);
+    std::shared_ptr<Sphere> sphere8 = std::make_shared<Sphere>(Point3(m_e, m_e, m_e), 0.10, material_blue);
 
-    world.addObject(std::make_shared<Sphere>(Point3(-1, 0, 0), 0.7, material_right));
-    world.addObject(std::make_shared<Sphere>(Point3(1, 0, 0), 0.7, material_left));
-    world.addObject(std::make_shared<Sphere>(Point3(0, -100.5, -1), 100, material_ground));
+    world.addObject(sphere1);
+    world.addObject(sphere2);
+    world.addObject(sphere3);
+    world.addObject(sphere4);
+    world.addObject(sphere5);
+    world.addObject(sphere6);
+    world.addObject(sphere7);
+    world.addObject(sphere8);
 
-    //Blob blob(2, 1, Point3(0, 0, 0), 1.1);
-    //Mesh mesh = blob.marchCubes();
-    //std::cout << "Mesh size: " << mesh.getMesh().size() << std::endl;
+    Blob blob(Point3(0, 0, 0), m_e, m_d, 0.9, material_ground);
+    Mesh mesh = blob.marchCubes();
+    std::cout << "Mesh size: " << mesh.getMesh().size() << std::endl;
+    world.addObject(std::make_shared<Mesh>(mesh));
 
     world.addLight(std::make_shared<DirectionalLight>(Point3(1, 4, 10), Color3(1, 1, 1), 1.0f));
 

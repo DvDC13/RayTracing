@@ -7,76 +7,22 @@
 class Blob
 {
 public:
-    Blob(unsigned int e, unsigned int d, Point3 position, double intensity)
-    {
-        m_e = e;
-        m_d = d;
-
-        m_potentials[0].position = position;
-        m_potentials[0].intensity = intensity;
-    }
+    Blob(Point3 position, double e, double d, double threshold, std::shared_ptr<TextureMaterial> TextureMaterial)
+        : m_position(position), m_e(e), m_d(d), m_threshold(threshold), m_TextureMaterial(TextureMaterial)
+    {}
 
     Mesh marchCubes()
     {
         Mesh mesh;
 
-        auto material_ground = std::make_shared<UniformTexture>(Color3(0.8, 0.8, 0.0), 0.5f, 0.5f);
-
-        for (int x = 0; x < m_e; x += m_d)
+        for (double x = m_position.getX(); x < m_e; x += m_d)
         {
-            for (int y = 0; y < m_e; y += m_d)
+            for (double y = m_position.getY(); y < m_e; y += m_d)
             {
-                for (int z = 0; z < m_e; z += m_d)
+                for (double z = m_position.getZ(); z < m_e; z += m_d)
                 {
-                    // Potential cube
-                    Point3 p7(x, y, z);
-                    Point3 p6(x + m_d, y, z);
-                    Point3 p2(x + m_d, y + m_d, z);
-                    Point3 p3(x, y + m_d, z);
-                    Point3 p4(x, y, z + m_d);
-                    Point3 p5(x + m_d, y, z + m_d);
-                    Point3 p1(x + m_d, y + m_d, z + m_d);
-                    Point3 p8(x, y + m_d, z + m_d);
-
-                    // Potential values
-                    double v1 = getPotential(p1);
-                    double v2 = getPotential(p2);
-                    double v3 = getPotential(p3);
-                    double v4 = getPotential(p4);
-                    double v5 = getPotential(p5);
-                    double v6 = getPotential(p6);
-                    double v7 = getPotential(p7);
-                    double v8 = getPotential(p8);
-
-                    // Threshold
-                    double Threshold = 1.0;
-                    int index = 0;
-
-                    if (v1 < Threshold) index |= 1;
-                    if (v2 < Threshold) index |= 2;
-                    if (v3 < Threshold) index |= 4;
-                    if (v4 < Threshold) index |= 8;
-                    if (v5 < Threshold) index |= 16;
-                    if (v6 < Threshold) index |= 32;
-                    if (v7 < Threshold) index |= 64;
-                    if (v8 < Threshold) index |= 128;
-
-                    char* line = lookUpTable[index];
-
-                    for (size_t i = 0; i < 15; i += 3)
-                    {
-                        if (line[i] == -1)
-                            break;
-
-                        Point3 p1 = getMidPoint(line[i], p1);
-                        Point3 p2 = getMidPoint(line[i + 1], p1);
-                        Point3 p3 = getMidPoint(line[i + 2], p1);
-
-
-                        Triangle t(p1, p2, p3, material_ground);
-
-                        mesh.addTriangle(t);
-                    }
+                    Point3 p(x, y, z);
+                    processMarchCube(p, mesh);
                 }
             }
         }
@@ -84,59 +30,148 @@ public:
         return mesh;   
     }
 
-private:
-    unsigned int m_e;
-    unsigned int m_d;
-
-    struct Potential
+    void processMarchCube(Point3& p, Mesh& mesh)
     {
-        Point3 position;
-        double intensity;
+        getCorners(p);
+        int index = getIndex();
+        getVertices(index);
+        addTriangles(mesh);
+
+        m_corners.clear();
+        m_vertices.clear();
+    }
+
+private:
+    Point3 m_position;
+    double m_e;
+    double m_d;
+    double m_threshold;
+    std::shared_ptr<TextureMaterial> m_TextureMaterial;
+
+    double m_pointsPotential[8];
+    std::vector<Point3> m_corners;
+    std::vector<Point3> m_vertices;
+
+    struct Edge
+    {
+        int vp1;
+        int vp2;
     };
 
-    Potential m_potentials[8];
+    void getCorners(Point3 p)
+    {
+        m_corners.push_back(p + Point3(0, 0, 0));
+        m_corners.push_back(p + Point3(m_d, 0, 0));
+        m_corners.push_back(p + Point3(m_d, 0, m_d));
+        m_corners.push_back(p + Point3(0, 0, m_d));
+        m_corners.push_back(p + Point3(0, m_d, 0));
+        m_corners.push_back(p + Point3(m_d, m_d, 0));
+        m_corners.push_back(p + Point3(m_d, m_d, m_d));
+        m_corners.push_back(p + Point3(0, m_d, m_d));
+    }
 
     double getPotential(Point3 p)
     {
-        double sum = 0.0;
-        for (int i = 0; i < 8; i++)
-        {
-            sum += m_potentials[i].intensity / (p - m_potentials[i].position).Length();
-        }
-
-        return sum;
+        Point3 center = Point3(m_e / 2, m_e / 2, m_e / 2);
+        double distance = (p - (m_position + center)).Length();
+        std::cout << "Distance: " << distance << std::endl;
+        return distance * 5 > m_threshold ? 1 : 0;
     }
 
-    Point3 getMidPoint(int index, Point3 p)
+    int getIndex()
     {
-        switch (index)
+        int index = 0;
+        
+        m_pointsPotential[0] = getPotential(m_corners[0]);
+        m_pointsPotential[1] = getPotential(m_corners[1]);
+        m_pointsPotential[2] = getPotential(m_corners[2]);
+        m_pointsPotential[3] = getPotential(m_corners[3]);
+        m_pointsPotential[4] = getPotential(m_corners[4]);
+        m_pointsPotential[5] = getPotential(m_corners[5]);
+        m_pointsPotential[6] = getPotential(m_corners[6]);
+        m_pointsPotential[7] = getPotential(m_corners[7]);
+
+        if (m_pointsPotential[0] < m_threshold) index |= 1;
+        if (m_pointsPotential[1] < m_threshold) index |= 2;
+        if (m_pointsPotential[2] < m_threshold) index |= 4;
+        if (m_pointsPotential[3] < m_threshold) index |= 8;
+        if (m_pointsPotential[4] < m_threshold) index |= 16;
+        if (m_pointsPotential[5] < m_threshold) index |= 32;
+        if (m_pointsPotential[6] < m_threshold) index |= 64;
+        if (m_pointsPotential[7] < m_threshold) index |= 128;
+
+        return index;
+    }
+
+    void getVertices(int index)
+    {
+        std::cout << "Index: " << index << std::endl;
+        for (int i = 0; i < 15; i++) //  TO TEJ 15
+        {
+            int edgeIndex = lookUpTable[index][i];
+
+            if (edgeIndex == -1) break;
+
+            Edge edge = getVerticeIndex(edgeIndex);
+            if (edge.vp1 == -1 || edge.vp2 == -1)
+            {
+                std::cout << "Error: Invalid edge index" << std::endl;
+                return;
+            }
+
+            std::cout << "Edge: " << edge.vp1 << " " << edge.vp2 << std::endl;
+
+            Point3 middleEdge = (m_corners[edge.vp1] + m_corners[edge.vp2]) / 2;
+
+            m_vertices.push_back(middleEdge);
+        }
+    }
+    
+    Edge getVerticeIndex(int edgeIndex)
+    {
+        switch (edgeIndex)
         {
         case 0:
-            return p + Point3(0.5, 1, 1) * m_d;
+            return Edge{ 0, 1 };
         case 1:
-            return p + Point3(1, 1, 0.5) * m_d;
+            return Edge{ 1, 2 };
         case 2:
-            return p + Point3(0.5, 1, 0) * m_d;
+            return Edge{ 2, 3 };
         case 3:
-            return p + Point3(0, 1, 0.5) * m_d;
+            return Edge{ 3, 0 };
         case 4:
-            return p + Point3(0.5, 0, 1) * m_d;
+            return Edge{ 4, 5 };
         case 5:
-            return p + Point3(1, 0, 0.5) * m_d;
+            return Edge{ 5, 6 };
         case 6:
-            return p + Point3(0.5, 0, 0) * m_d;
+            return Edge{ 6, 7 };
         case 7:
-            return p + Point3(0, 0, 0.5) * m_d;
+            return Edge{ 7, 4 };
         case 8:
-            return p + Point3(0, 1, 0.5) * m_d;
+            return Edge{ 0, 4 };
         case 9:
-            return p + Point3(1, 0.5, 1) * m_d;
+            return Edge{ 1, 5 };
         case 10:
-            return p + Point3(1, 0.5, 0) * m_d;
+            return Edge{ 2, 6 };
         case 11:
-            return p + Point3(0, 0.5, 0) * m_d;
+            return Edge{ 3, 7 };
         default:
-            std::runtime_error("Invalid index" + index);
+            return Edge{ -1, -1 };
         }
+    }
+
+    void addTriangles(Mesh& mesh)
+    {
+        std::cout << "m_vertices.size(): " << m_vertices.size() << std::endl;
+        for (int i = 0; i < m_vertices.size(); i += 3)
+        {
+            Point3 p1 = m_vertices[i];
+            Point3 p2 = m_vertices[i + 1];
+            Point3 p3 = m_vertices[i + 2];
+
+            Triangle triangle(p1, p2, p3, m_TextureMaterial);
+            mesh.addTriangle(triangle);
+        }
+        std::cout << "mesh.triangles.size(): " << mesh.getMesh().size() << std::endl;
     }
 };

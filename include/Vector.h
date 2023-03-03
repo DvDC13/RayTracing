@@ -100,6 +100,11 @@ inline Vector3 operator/(const Vector3& left, double scalar)
     return left * (1.0f / scalar);
 }
 
+inline bool operator==(const Vector3& left, const Vector3& right)
+{
+    return left.getX() == right.getX() && left.getY() == right.getY() && left.getZ() == right.getZ();
+}
+
 inline double Dot(const Vector3& left, const Vector3& right)
 {
     return left.getX() * right.getX() + left.getY() * right.getY() + left.getZ() * right.getZ();
