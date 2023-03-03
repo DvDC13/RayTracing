@@ -91,17 +91,36 @@ public:
             m_textureMaterial = material;
         }
     
+    // See: https://www.scratchapixel.com/lessons/3d-basic-rendering/ray-tracing-rendering-a-triangle/ray-triangle-intersection-geometric-solution.html
     virtual bool intersects(const Ray& ray, double t_min, double t_max, hit_record& record) const override
     {
+        // Plane equation: Ax + By + Cz + D = 0
+        // N = (A, B, C)
+        // D = -Dot(N, P0) // P0 is a point on the plane
+        // t = -(Dot(N, P0) + D) / Dot(N, RD)
+        // P = O + t * RD
+
         Vector3 u = m_p1 - m_p0;
         Vector3 v = m_p2 - m_p0;
         Vector3 N = Cross(u, v);
         double NsRD = Dot(N, ray.direction());
-        if (NsRD == 0) return false;
+        if (NsRD == 0) return false; // ray is parallel to triangle
 
-        double d = -Dot(N, m_p0);
+        double D = -Dot(N, m_p0);
 
-        double t = -(Dot(N, ray.origin()) + d) / NsRD;
+        /*
+        P = O + t * RD
+        Ax + By + Cz + D = 0
+        A*Px + B*Py + C*Pz + D = 0
+        A*(Ox + t * RDx) + B*(Oy + t * RDy) + C*(Oz + t * RDz) + D = 0
+        A*Ox + A*t * RDx + B*Oy + B*t * RDy + C*Oz + C*t * RDz + D = 0
+        A*Ox + B*Oy + C*Oz + D + A*t * RDx + B*t * RDy + C*t * RDz = 0
+        t*(A*RDx + B*RDy + C*RDz) = -(A*Ox + B*Oy + C*Oz + D)
+        t = -(A*Ox + B*Oy + C*Oz + D) / (A*RDx + B*RDy + C*RDz)
+        t = -(Dot(N, O) + D) / Dot(N, RD)
+        */
+        double t = -(Dot(N, ray.origin()) + D) / NsRD;
+
         if (t < t_min || t > t_max) return false;
 
         Point3 P = ray.at(t);

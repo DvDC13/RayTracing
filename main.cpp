@@ -151,7 +151,7 @@ int main(int argc, char** argv)
                 double u = double(i + RandomDouble()) / (image.getWidth() - 1);
                 double v = double(j + RandomDouble()) / (image.getHeight() - 1);
                 Ray ray = world.getCamera().getRay(u, v);
-                pixel_color += ray_cast(ray, world, max_depth);
+                pixel_color += ray_cast(ray, world, max_depth); 
             });
 
             Pixel pixel = processImageColor(pixel_color, samples_per_pixel);
