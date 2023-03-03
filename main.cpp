@@ -4,6 +4,7 @@
 #include "Mesh.h"
 #include "Blob.h"
 
+#include <execution>
 #include <chrono>
 #include <iostream>
 
@@ -100,10 +101,8 @@ int main(int argc, char** argv)
 
     auto material_ground = std::make_shared<UniformTexture>(Color3(0.8, 0.8, 0.0), 0.5f, 0.5f);
     auto material_blue = std::make_shared<UniformTexture>(Color3(0.2, 0.4, 0.9), 0.5f, 0.5f);
-    //auto material_left = std::make_shared<MetalTexture>(Color3(1.0, 0.8, 0.8), 1.0);
-    //auto material_right = std::make_shared<MirrorTexture>(Color3(1.0, 0.0, 0.0));
 
-    int m_e = 4;
+    int m_e = 2;
     int m_d = 1;
 
     std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(Point3(0, 0, 0), 0.10, material_blue);
@@ -126,7 +125,6 @@ int main(int argc, char** argv)
 
     Blob blob(Point3(0, 0, 0), m_e, m_d, 0.9, material_ground);
     Mesh mesh = blob.marchCubes();
-    std::cout << "Mesh size: " << mesh.getMesh().size() << std::endl;
     world.addObject(std::make_shared<Mesh>(mesh));
 
     world.addLight(std::make_shared<DirectionalLight>(Point3(1, 4, 10), Color3(1, 1, 1), 1.0f));
@@ -136,8 +134,31 @@ int main(int argc, char** argv)
 
     int width = 400;
     int height = 360;
-    Image image(width, height);
+    Image image(width, height, samples_per_pixel);
 
+    std::cerr << "Rendering a " << width << "x" << height << " image " << std::endl;
+
+#define MULTITHREADED 1
+
+#if MULTITHREADED
+    std::for_each(std::execution::par, image.getVerticalIter().begin(), image.getVerticalIter().end(), [&](int j)
+    {
+        std::for_each(std::execution::par, image.getHorizontalIter().begin(), image.getHorizontalIter().end(), [&](int i)
+        {
+            Color3 pixel_color(0, 0, 0);
+            std::for_each(std::execution::par, image.getSampleIter().begin(), image.getSampleIter().end(), [&](int s)
+            {
+                double u = double(i + RandomDouble()) / (image.getWidth() - 1);
+                double v = double(j + RandomDouble()) / (image.getHeight() - 1);
+                Ray ray = world.getCamera().getRay(u, v);
+                pixel_color += ray_cast(ray, world, max_depth);
+            });
+
+            Pixel pixel = processImageColor(pixel_color, samples_per_pixel);
+            image.setPixel(i, j, pixel);
+        });
+    });
+#else
     for (int j = image.getHeight() - 1; j >= 0; j--)
     {
         std::cerr << "\rScanlines remaining: " << j << ' ' << std::flush;
@@ -156,6 +177,7 @@ int main(int argc, char** argv)
             image.setPixel(i, j, pixel);
         }
     }
+#endif
 
     objects.clear();
     lights.clear();

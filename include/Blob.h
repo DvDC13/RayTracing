@@ -74,7 +74,6 @@ private:
     {
         Point3 center = Point3(m_e / 2, m_e / 2, m_e / 2);
         double distance = (p - (m_position + center)).Length();
-        std::cout << "Distance: " << distance << std::endl;
         return distance * 5 > m_threshold ? 1 : 0;
     }
 
@@ -105,7 +104,6 @@ private:
 
     void getVertices(int index)
     {
-        std::cout << "Index: " << index << std::endl;
         for (int i = 0; i < 15; i++) //  TO TEJ 15
         {
             int edgeIndex = lookUpTable[index][i];
@@ -118,8 +116,6 @@ private:
                 std::cout << "Error: Invalid edge index" << std::endl;
                 return;
             }
-
-            std::cout << "Edge: " << edge.vp1 << " " << edge.vp2 << std::endl;
 
             Point3 middleEdge = (m_corners[edge.vp1] + m_corners[edge.vp2]) / 2;
 
@@ -162,7 +158,6 @@ private:
 
     void addTriangles(Mesh& mesh)
     {
-        std::cout << "m_vertices.size(): " << m_vertices.size() << std::endl;
         for (int i = 0; i < m_vertices.size(); i += 3)
         {
             Point3 p1 = m_vertices[i];
@@ -172,6 +167,5 @@ private:
             Triangle triangle(p1, p2, p3, m_TextureMaterial);
             mesh.addTriangle(triangle);
         }
-        std::cout << "mesh.triangles.size(): " << mesh.getMesh().size() << std::endl;
     }
 };
