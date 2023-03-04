@@ -104,7 +104,7 @@ private:
 
     void getVertices(int index)
     {
-        for (int i = 0; i < 15; i++) //  TO TEJ 15
+        for (int i = 0; i < lookUpTableCols; i++)
         {
             int edgeIndex = lookUpTable[index][i];
 

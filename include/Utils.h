@@ -1,9 +1,12 @@
 #pragma once
 
+#define MULTITHREADED 1
+
 #include <cmath>
 #include <limits>
 #include <memory>
 #include <random>
+#include <execution>
 
 const double infinity = std::numeric_limits<double>::infinity();
 const double pi = 3.1415926535897932385f;
@@ -29,7 +32,10 @@ inline double Clamp(double x, double min, double max)
     return x;
 }
 
-static char lookUpTable[256][15] =
+const int lookUpTableRows = 256;
+const int lookUpTableCols = 15;
+
+static char lookUpTable[lookUpTableRows][lookUpTableCols] =
     {
         {-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},
         {0, 8, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1},

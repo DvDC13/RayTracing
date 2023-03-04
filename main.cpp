@@ -4,7 +4,6 @@
 #include "Mesh.h"
 #include "Blob.h"
 
-#include <execution>
 #include <chrono>
 #include <iostream>
 
@@ -137,8 +136,6 @@ int main(int argc, char** argv)
     Image image(width, height, samples_per_pixel);
 
     std::cerr << "Rendering a " << width << "x" << height << " image " << std::endl;
-
-#define MULTITHREADED 1
 
 #if MULTITHREADED
     std::for_each(std::execution::par, image.getVerticalIter().begin(), image.getVerticalIter().end(), [&](int j)
