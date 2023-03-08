@@ -73,8 +73,9 @@ private:
     double getPotential(Point3 p)
     {
         Point3 center = Point3(m_e / 2, m_e / 2, m_e / 2);
-        double distance = (p - (m_position + center)).Length();
-        return distance * 5 > m_threshold ? 1 : 0;
+        double r = (p - center).Length();
+        double d = r - m_threshold;
+        return d;
     }
 
     int getIndex()

@@ -101,8 +101,8 @@ int main(int argc, char** argv)
     auto material_ground = std::make_shared<UniformTexture>(Color3(0.8, 0.8, 0.0), 0.5f, 0.5f);
     auto material_blue = std::make_shared<UniformTexture>(Color3(0.2, 0.4, 0.9), 0.5f, 0.5f);
 
-    int m_e = 2;
-    int m_d = 1;
+    int m_e = 5;
+    int m_d = 2.5;
 
     std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(Point3(0, 0, 0), 0.10, material_blue);
     std::shared_ptr<Sphere> sphere2 = std::make_shared<Sphere>(Point3(m_e, 0, 0), 0.10, material_blue);
@@ -122,11 +122,11 @@ int main(int argc, char** argv)
     world.addObject(sphere7);
     world.addObject(sphere8);
 
-    Blob blob(Point3(0, 0, 0), m_e, m_d, 0.9, material_ground);
+    Blob blob(Point3(0, 0, 0), m_e, m_d, 1.5, material_ground);
     Mesh mesh = blob.marchCubes();
     world.addObject(std::make_shared<Mesh>(mesh));
 
-    world.addLight(std::make_shared<DirectionalLight>(Point3(1, 4, 10), Color3(1, 1, 1), 1.0f));
+    world.addLight(std::make_shared<DirectionalLight>(Point3(1, 4, 10), Color3(1, 1, 1), 0.1f));
 
     const int samples_per_pixel = 100;
     int max_depth = 50;
