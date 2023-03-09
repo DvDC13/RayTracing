@@ -47,7 +47,7 @@ Color3 ray_cast(const Ray& r, const Scene& world, int limit)
 
                 if (specular_intensity > 0)
                 {
-                    color += light_color * specular * pow(specular_intensity, 4);
+                    color += light_color * specular * pow(specular_intensity, 8);
                 }
             }
 
@@ -98,13 +98,13 @@ int main(int argc, char** argv)
     std::vector<std::shared_ptr<Light>> lights;
     Scene world(objects, lights);
 
-    auto material_ground = std::make_shared<UniformTexture>(Color3(0.8, 0.8, 0.0), 0.5f, 0.5f);
-    auto material_blue = std::make_shared<UniformTexture>(Color3(0.2, 0.4, 0.9), 0.5f, 0.5f);
+    auto material_ground = std::make_shared<UniformTexture>(Color3(0.0, 0.0, 0.0), 0.5f, 0.5f);
+    auto material_red = std::make_shared<UniformTexture>(Color3(1.0, 0.0, 0.0), 0.5f, 0.5f);
 
-    int m_e = 5;
-    int m_d = 2.5;
+    double m_e = 10;
+    double m_d = 0.25;
 
-    std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(Point3(0, 0, 0), 0.10, material_blue);
+    /*std::shared_ptr<Sphere> sphere1 = std::make_shared<Sphere>(Point3(0, 0, 0), 0.10, material_blue);
     std::shared_ptr<Sphere> sphere2 = std::make_shared<Sphere>(Point3(m_e, 0, 0), 0.10, material_blue);
     std::shared_ptr<Sphere> sphere3 = std::make_shared<Sphere>(Point3(0, m_e, 0), 0.10, material_blue);
     std::shared_ptr<Sphere> sphere4 = std::make_shared<Sphere>(Point3(0, 0, m_e), 0.10, material_blue);
@@ -120,23 +120,29 @@ int main(int argc, char** argv)
     world.addObject(sphere5);
     world.addObject(sphere6);
     world.addObject(sphere7);
-    world.addObject(sphere8);
+    world.addObject(sphere8);*/
 
-    Blob blob(Point3(0, 0, 0), m_e, m_d, 1.5, material_ground);
+    /*Blob blob(Point3(0, 0, 0), m_e, m_d, 2.0, material_blue);
     Mesh mesh = blob.marchCubes();
-    world.addObject(std::make_shared<Mesh>(mesh));
+    world.addObject(std::make_shared<Mesh>(mesh));*/
 
-    world.addLight(std::make_shared<DirectionalLight>(Point3(1, 4, 10), Color3(1, 1, 1), 0.1f));
+    Sphere sphere(Point3(0, 0, -1), 0.5, material_red);
+    world.addObject(std::make_shared<Sphere>(sphere));
+    Sphere sphere2(Point3(0, -100.5, -1), 100, material_ground);
+    world.addObject(std::make_shared<Sphere>(sphere2));
+
+    world.addLight(std::make_shared<PointLight>(Point3(1, 4, 10), Color3(1, 1, 1), 1.2f));
 
     const int samples_per_pixel = 100;
     int max_depth = 50;
 
-    int width = 400;
-    int height = 360;
+    int width = 512;
+    int height = 512;
     Image image(width, height, samples_per_pixel);
 
     std::cerr << "Rendering a " << width << "x" << height << " image " << std::endl;
 
+#define MULTITHREADED 1
 #if MULTITHREADED
     std::for_each(std::execution::par, image.getVerticalIter().begin(), image.getVerticalIter().end(), [&](int j)
     {

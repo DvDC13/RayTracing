@@ -14,9 +14,9 @@ public:
     virtual Color3 getColor() const = 0;
 };
 
-class DirectionalLight : public Light {
+class PointLight : public Light {
 public:
-    DirectionalLight(const Point3& position, const Color3& color, double intensity)
+    PointLight(const Point3& position, const Color3& color, double intensity)
         : position(position), color(color), intensity(intensity) {}
 
     virtual Vector3 getDirection(const Point3& point) const override

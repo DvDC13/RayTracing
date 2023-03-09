@@ -23,6 +23,8 @@ public:
                 {
                     Point3 p(x, y, z);
                     processMarchCube(p, mesh);
+
+                    std::cout << "Marching cube: " << x << ", " << y << ", " << z << std::endl;
                 }
             }
         }

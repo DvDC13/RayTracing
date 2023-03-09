@@ -1,7 +1,5 @@
 #pragma once
 
-#define MULTITHREADED 1
-
 #include <cmath>
 #include <limits>
 #include <memory>
