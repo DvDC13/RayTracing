@@ -26,5 +26,3 @@ To build the program, simply run:
     make
 
 This will compile the main.cpp file and generate an executable named SimpleRayTracer
-
-# Implementation Details
